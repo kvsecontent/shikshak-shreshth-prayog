@@ -604,12 +604,12 @@
     const r = byId[id];
     if (r && r.t) {
       return { kind: "nat", title_en: r.t[0], title_hi: r.t[1], steps_en: r.st[0], steps_hi: r.st[1], scene: r.scene, grades: r.gr, year: r.year,
-        place: r.state, note: `Inspired by a ${r.year} National Teachers' Award practice`,
+        place: r.state, org: r.org, subj: (r.sub || []).filter(x => x !== "All"), note: `Inspired by a ${r.year} National Teachers' Award practice`,
         note_hi: `${r.year} के राष्ट्रीय शिक्षक पुरस्कार की पद्धति से प्रेरित` };
     }
     const p = wById[id];
     if (p) return { kind: "world", title_en: p.name_en, title_hi: p.name_hi, steps_en: p.steps_en, steps_hi: p.steps_hi, scene: p.scene, grades: p.grades,
-      place: "India", note: `Adapted from ${p.country}`, note_hi: `${p.country} की पद्धति, भारतीय कक्षा के लिए` };
+      place: "India", org: "", subj: (p.subj || []).filter(x => x !== "All"), note: `Adapted from ${p.country}`, note_hi: `${p.country} की पद्धति, भारतीय कक्षा के लिए` };
     return null;
   }
   function gradeText(gr) {
@@ -626,13 +626,24 @@
       textLang === "hi" ? "Any words in the image must be in correct Hindi (Devanagari script), short and clearly legible." :
         "Any words in the image must be in simple, correctly spelled English, short and clearly legible.";
     const safety = "Use generic, fictional characters only: do not depict, imitate or name any real or identifiable person, and add no logos or brand names. Show children respectfully, fully clothed in school uniforms, safe and happy.";
-    const setting = `${it.place && it.place !== "India" ? `in ${it.place}, India` : "in India"}, ${gradeText(it.grades)}`;
+    const ORG = { KVS: "a Kendriya Vidyalaya (central government school)", NVS: "a Jawahar Navodaya Vidyalaya (residential school)",
+      EMRS: "an Eklavya Model Residential School for tribal students", "Sainik School": "a Sainik School", AEES: "an Atomic Energy Central School" };
+    const where = `${ORG[it.org] || "a school"}${it.place && it.place !== "India" ? ` in ${it.place}, India` : " in India"}`;
+    let subs = it.subj || [];
+    if (subs.length > 1) subs = subs.filter(x => x !== "Language");
+    const subj = subs.length ? ` during a ${subs.join(" / ")} lesson` : "";
+    const q = it.title_en.includes('"') ? it.title_en : `"${it.title_en}"`;
+    const stepsEn = it.steps_en || [];
+    // Practice-specific details first (what makes this image different), shared rules last and short.
     const scene = [
-      `Create an image. Style: ${style}. Format: ${ratio}.`,
-      `Scene: ${it.scene}.`,
-      `Context: an Indian government-school classroom or campus ${setting}, showing the teaching practice "${it.title_en}". Typical Indian school details: blackboard or whiteboard, simple benches or floor mats, charts on the walls, natural daylight, children of mixed backgrounds including girls in active roles${/incl|CWSN|disab/i.test(it.scene) ? "" : " and, where natural, a child with a disability participating"}.`,
-      `Mood: joyful, curious, collaborative. The teacher is a guide among the children, not lecturing from the front.`,
-      textRule, safety
+      `Create an illustration of this classroom practice: ${q}.`,
+      `Who and where: ${gradeText(it.grades)} students of ${where}${subj}.`,
+      `Main scene: ${it.scene}.`,
+      `Show these activity details clearly — they are the heart of the practice:`,
+      ...stepsEn.map(x => `• ${x}`),
+      `The picture alone should make the activity easy to understand, so another teacher can copy it. The teacher works among the students as a guide.`,
+      `Style: ${style}. Format: ${ratio}.`,
+      `${textRule} Generic fictional people only (no real or identifiable person, no logos). Children in school uniform, safe and happy.`
     ].join("\n");
     const comic = [
       `Create a 4-panel instructional comic strip. Style: ${style}. Format: ${ratio}, panels in a 2×2 grid with clear borders, numbered 1–4.`,
