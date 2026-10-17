@@ -43,6 +43,23 @@
     return r.school;
   };
   const hasVideo = r => !!(r.yt && r.yt.id);
+  const BASE = location.href.split("#")[0].split("?")[0];
+  const WA_ICON = `<svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8s-.4-.1-.6.1-.7.8-.8 1-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.2-.4.7-1.3a.5.5 0 0 0 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.8 11.8 0 0 0 4.5 4c1.7.7 2.3.8 3.2.6a2.7 2.7 0 0 0 1.8-1.2 2.2 2.2 0 0 0 .1-1.2c0-.1-.2-.2-.4-.3z"/></svg>`;
+  // WhatsApp message for an awardee (r) or a world practice (p)
+  function waText(x) {
+    const hi = lang === "hi";
+    let head, steps, link;
+    if (x.t) {
+      head = `*${x.t[DI()]}*\n${plainName(x.name)}, ${x.school}${x.state ? ", " + stateL(x.state) : ""} · ${hi ? "राष्ट्रीय शिक्षक पुरस्कार" : "National Teachers' Award"} ${x.year}`;
+      steps = x.st[DI()]; link = BASE + "#/awardees?open=" + x.id;
+    } else {
+      head = `*${hi ? x.name_hi : x.name_en}*\n${x.country} · ${hi ? "विश्व की श्रेष्ठ पद्धति" : "World best practice"}`;
+      steps = hi ? x.steps_hi : x.steps_en; link = BASE + "#/world?wopen=" + x.id;
+    }
+    return `${head}\n\n${hi ? "अपनी कक्षा में कैसे अपनाएँ:" : "How to adopt it in your class:"}\n${steps.map((s, i) => `${i + 1}. ${s}`).join("\n")}\n\n${hi ? "पूरा देखें (वीडियो सहित)" : "See full details (with video)"}: ${link}`;
+  }
+  const waUrl = x => "https://wa.me/?text=" + encodeURIComponent(waText(x));
+  const waBtn = (x, cls = "btn sm wa") => `<a class="${cls}" href="${waUrl(x)}" target="_blank" rel="noopener" aria-label="WhatsApp">${WA_ICON}<span>WhatsApp</span></a>`;
   const toast = msg => { const el = $("#toast"); el.textContent = msg; el.classList.add("show"); clearTimeout(toast._t); toast._t = setTimeout(() => el.classList.remove("show"), 1800); };
   const copyText = async txt => {
     try { await navigator.clipboard.writeText(txt); }
@@ -73,7 +90,7 @@
   }));
 
   // ---------- router ----------
-  const VIEWS = ["overview", "awardees", "kvs", "states", "themes", "world", "prize", "prompts", "tracker", "about"];
+  const VIEWS = ["overview", "awardees", "kvs", "chapters", "states", "themes", "world", "prize", "prompts", "tracker", "about"];
   function parseHash() {
     const h = location.hash.replace(/^#\/?/, "");
     const [v, qs] = h.split("?");
@@ -85,7 +102,7 @@
     const { view, params } = parseHash();
     $$("[data-view]").forEach(s => { s.hidden = s.dataset.view !== view; });
     $$(".tabs a").forEach(a => { if (a.dataset.tab === view) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current"); });
-    const R = { overview: renderOverview, awardees: () => renderAwardees(params), kvs: renderKvs, states: renderStates, themes: renderThemes,
+    const R = { overview: renderOverview, awardees: () => renderAwardees(params), kvs: renderKvs, chapters: () => renderChapters(params), states: renderStates, themes: renderThemes,
       world: renderWorld, prize: renderPrize, prompts: () => renderStudio(params), tracker: renderTracker, about: renderAbout };
     R[view]();
     if (view !== lastView && !force) window.scrollTo(0, 0);
@@ -96,6 +113,7 @@
       if (l < nav.scrollLeft) nav.scrollLeft = l - 16; else if (r > nav.scrollLeft + nav.clientWidth) nav.scrollLeft = r - nav.clientWidth + 16;
     }
     if (params.get("open")) openAwardee(params.get("open"));
+    if (params.get("wopen")) openWorld(params.get("wopen"));
   }
   window.addEventListener("hashchange", () => route(false));
 
@@ -122,7 +140,33 @@
   function countBy(list, fn) { const m = new Map(); list.forEach(r => [].concat(fn(r)).forEach(k => { if (k !== undefined && k !== "") m.set(k, (m.get(k) || 0) + 1); })); return m; }
 
   // ---------- OVERVIEW ----------
+  // ---------- PRACTICE OF THE WEEK ----------
+  // Same practice for everyone in a given week; the pool is a fixed pseudo-random order so themes vary week to week.
+  function weekInfo(d = new Date()) {
+    const day = (d.getDay() + 6) % 7, mon = new Date(d.getFullYear(), d.getMonth(), d.getDate() - day), sun = new Date(mon); sun.setDate(mon.getDate() + 6);
+    const weekNo = Math.floor((mon - new Date(2021, 0, 4)) / 6048e5);
+    return { weekNo, mon, sun };
+  }
+  const hash = s => { let h = 2166136261; for (const c of s) { h ^= c.charCodeAt(0); h = Math.imul(h, 16777619); } return h >>> 0; };
+  const weekPool = A.filter(r => r.t && r.cat === "school" && r.cs === "official" && r.cost < 2).sort((a, b) => hash(a.id) - hash(b.id));
+  function weeklyPractice() { const w = weekInfo(); return { r: weekPool[((w.weekNo % weekPool.length) + weekPool.length) % weekPool.length], ...w }; }
+  function renderWeekly() {
+    const { r, mon, sun } = weeklyPractice(); if (!r) return;
+    const fmt = d => d.toLocaleDateString(lang === "hi" ? "hi-IN" : "en-IN", { day: "numeric", month: "short" });
+    $("#weekly").innerHTML = `<div class="wk-tag">${esc(t("weekTitle"))} · ${fmt(mon)} – ${fmt(sun)}</div>
+      <div class="wk-body"><div class="wk-main"><h2>${esc(title(r))}</h2>
+        <p class="muted" style="margin:0 0 8px">${esc(plainName(r.name))} · ${esc(r.school)} · ${esc(stateL(r.state))} · ${r.year}</p>
+        <div class="chips">${(r.gr || []).map(g => `<span class="chip">${esc(bandL(g))}</span>`).join("")}<span class="chip cost${r.cost}">${esc(costL(r.cost))}</span></div>
+        <ol class="steps">${r.st[DI()].map(s => `<li>${esc(s)}</li>`).join("")}</ol></div>
+        <div class="wk-actions"><button class="btn primary" data-open="${r.id}">${esc(t("open"))}</button>${waBtn(r, "btn wa")}
+          <button class="btn" type="button" data-wprint="${r.id}">${esc(t("printCard"))}</button>
+          <a class="btn ghost" href="#/prompts?id=${r.id}">${esc(t("makePrompts"))}</a></div></div>
+      <p class="note" style="margin:8px 0 0">${esc(t("weekNote"))}</p>`;
+  }
+  document.addEventListener("click", e => { const b = e.target.closest("[data-wprint]"); if (b) printCard(byId[b.dataset.wprint]); });
+
   function renderOverview() {
+    renderWeekly();
     const states = new Set(A.map(r => r.state).filter(Boolean));
     const k = [
       [A.length, t("kAward")], [A.filter(r => r.cat === "school").length, t("kSchool")], [states.size, t("kStates")],
@@ -233,6 +277,7 @@
         <button class="btn sm primary" data-open="${r.id}">${esc(t("open"))}</button>
         ${r.t ? `<a class="btn sm" href="#/prompts?id=${r.id}">${esc(t("makePrompts"))}</a>` : ""}
         ${r.t ? `<button class="btn sm" data-track="${r.id}" aria-pressed="${tracked}">${esc(tracked ? t("inTrack") : t("addTrack"))}</button>` : ""}
+        ${r.t ? waBtn(r) : ""}
         ${hasVideo(r) ? `<span class="vid-dot"><svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><path fill="#c00" d="M23 7s-.2-1.6-.9-2.3c-.9-.9-1.9-.9-2.4-1C16.4 3.5 12 3.5 12 3.5s-4.4 0-7.7.2c-.5.1-1.5.1-2.4 1C1.2 5.4 1 7 1 7S.8 8.9.8 10.8v1.8c0 1.9.2 3.8.2 3.8s.2 1.6.9 2.3c.9.9 2.1.9 2.6 1 1.9.2 7.5.2 7.5.2s4.4 0 7.7-.2c.5-.1 1.5-.1 2.4-1 .7-.7.9-2.3.9-2.3s.2-1.9.2-3.8v-1.8C23.2 8.9 23 7 23 7z"/><path fill="#fff" d="M9.7 15.1V8.5l6 3.3z"/></svg>${esc(t("video"))}</span>` : ""}
       </div></article>`;
   }
@@ -325,6 +370,7 @@
         <a class="btn primary" href="#/prompts?id=${r.id}">${esc(t("makePrompts"))}</a>
         <button class="btn" type="button" data-print="${r.id}">${esc(t("printCard"))}</button>
         <button class="btn" type="button" data-track="${r.id}" aria-pressed="${tracked}">${esc(tracked ? t("inTrack") : t("addTrack"))}</button>
+        ${waBtn(r, "btn wa")}
         <button class="btn ghost" type="button" data-share="${r.id}">${esc(t("share"))}</button></div>` : ""}`;
     if (!dlg.open) dlg.showModal();
     $(".d-in", dlg).scrollTop = 0;
@@ -346,6 +392,99 @@
     $("#kvsKpis").innerHTML = k.map(([n, l]) => `<div class="kpi"><b>${n}</b><span>${esc(l)}</span></div>`).join("");
     $("#kvsCards").innerHTML = list.map(card).join("");
   }
+
+  // ---------- CHAPTERS & CGs ----------
+  const CUR = window.CUR_DATA || { books: [], cg: {}, topics: {}, subjects: {}, langBooks: {}, langSkills: [], practiceTopics: {}, worldTopics: {} };
+  const topicL = c => (CUR.topics[c] || [c, c])[LI()];
+  const subjKeyL = k => (CUR.subjects[k] || [k, k])[LI()];
+  const bandOf = c => (c <= 2 ? "1-2" : c <= 5 ? "3-5" : c <= 8 ? "6-8" : "9-10");
+  const BAND_IDX = { "1-2": 0, "3-5": 1, "6-8": 2, "9-10": 3, "11-12": 4 };
+  const SUBJ_MATCH = { maths: ["Maths"], evs: ["EVS", "Science", "Social Science"], science: ["Science"], sst: ["Social Science", "Economics", "Commerce"],
+    english: ["English", "Language"], hindi: ["Hindi", "Language"] };
+  const GENERAL = ["g18", "g17", "g19", "g24", "g23"];
+  const CF = { c: 4, s: "maths", m: "ch" };
+  function subjectsFor(c) {
+    const ks = [...new Set(CUR.books.filter(b => b.cls === c).map(b => b.subj))];
+    return ks.concat(["english", "hindi"].filter(k => CUR.langBooks[c] && CUR.langBooks[c][k]));
+  }
+  function matchPractices(tps, cls, subj, limit = 6) {
+    const band = bandOf(cls), bi = BAND_IDX[band], want = SUBJ_MATCH[subj] || [];
+    const out = [];
+    for (const [id, ptp] of Object.entries(CUR.practiceTopics)) {
+      const r = byId[id]; if (!r) continue;
+      const hit = ptp.filter(x => tps.includes(x)); if (!hit.length) continue;
+      const gi = (r.gr || []).map(g => BAND_IDX[g]).filter(x => x !== undefined);
+      const dist = Math.min(...gi.map(x => Math.abs(x - bi)));
+      if (dist > 1) continue;
+      let sc = hit.length * 3 + (dist === 0 ? 3 : 0.5) + ((r.sub || []).some(x => want.includes(x)) ? 1.5 : (r.sub || []).includes("All") ? 0.5 : 0) + (r.cost === 0 ? 0.3 : 0) + (r.cs === "official" ? 0.2 : 0);
+      out.push({ r, hit, sc, adj: dist > 0 });
+    }
+    return out.sort((a, b) => b.sc - a.sc).slice(0, limit);
+  }
+  function matchWorld(tps, cls, limit = 2) {
+    const band = bandOf(cls);
+    return W.practices.filter(p => p.grades.includes(band) && (CUR.worldTopics[p.id] || []).some(x => tps.includes(x))).slice(0, limit);
+  }
+  function miniCard(m) {
+    const r = m.r;
+    return `<div class="mini"><div class="mini-main"><strong>${esc(title(r))}</strong>
+        <small>${esc(plainName(r.name))} · ${esc(stateL(r.state))} · ${r.year}${m.adj ? ` · <em>${esc(t("cAdj"))}</em>` : ""}</small>
+        <div class="chips">${m.hit.map(x => `<span class="chip tp">${esc(topicL(x))}</span>`).join("")}<span class="chip cost${r.cost}">${esc(costL(r.cost))}</span></div></div>
+      <div class="mini-act"><button class="btn sm primary" data-open="${r.id}">${esc(t("open"))}</button>${waBtn(r)}</div></div>`;
+  }
+  function miniWorld(p) {
+    return `<div class="mini world"><div class="mini-main"><strong>${esc(lang === "hi" ? p.name_hi : p.name_en)}</strong>
+        <small>${esc(t("cWorld"))} · ${esc(p.country)}</small><div class="chips"><span class="chip ev-${p.evidence}">${esc(evL(p.evidence))}</span></div></div>
+      <div class="mini-act"><button class="btn sm" data-wopen="${p.id}">${esc(t("open"))}</button></div></div>`;
+  }
+  function itemBlock(head, sub, tps, extraHtml) {
+    const ms = matchPractices(tps, CF.c, CF.s), ws = matchWorld(tps, CF.c);
+    const n = ms.length + ws.length;
+    return `<details class="chap"${n ? "" : ""}><summary><span class="chap-h">${head}</span>
+        <span class="chap-meta">${tps.map(x => `<span class="chip tp">${esc(topicL(x))}</span>`).join("")}<span class="badge${n ? "" : " zero"}">${esc(t("cMatches", n))}</span></span></summary>
+      <div class="chap-body">${sub ? `<p class="note">${sub}</p>` : ""}${extraHtml || ""}
+        ${ms.map(miniCard).join("")}${ws.map(miniWorld).join("")}${n ? "" : `<p class="muted">${esc(t("cNone"))}</p>`}</div></details>`;
+  }
+  function renderChapters(params) {
+    if (params && params.get("c")) { CF.c = +params.get("c") || 4; CF.s = params.get("s") || CF.s; CF.m = params.get("m") || "ch"; }
+    $("#cClass").innerHTML = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(c => `<option value="${c}"${c === CF.c ? " selected" : ""}>${lang === "hi" ? "कक्षा " : "Class "}${c}</option>`).join("");
+    const subs = subjectsFor(CF.c); if (!subs.includes(CF.s)) CF.s = subs[0];
+    $("#cSubj").innerHTML = subs.map(k => `<option value="${k}"${k === CF.s ? " selected" : ""}>${esc(subjKeyL(k))}</option>`).join("");
+    const cgOk = CF.c >= 3 && CF.c <= 5 && CUR.cg[CF.s];
+    if (!cgOk) CF.m = "ch";
+    $("#cMode").hidden = !cgOk;
+    $$("#cMode button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.mode === CF.m)));
+    const gen = W.practices.filter(p => GENERAL.includes(p.id) && p.grades.includes(bandOf(CF.c)));
+    let html = gen.length ? `<details class="chap gen"><summary><span class="chap-h"><b>${esc(t("cGeneral"))}</b></span><span class="chap-meta"><span class="badge">${esc(t("cMatches", gen.length))}</span></span></summary><div class="chap-body gen-row">${gen.map(miniWorld).join("")}</div></details>` : "";
+    const isLang = CF.s === "english" || CF.s === "hindi";
+    if (CF.m === "cg") {
+      html += `<p class="note">${esc(t("cCgNote"))}</p>`;
+      let last = "";
+      CUR.cg[CF.s].forEach(g => {
+        if (g.cg !== last) { html += `<h3 class="cg-h">${esc(g.cg)}</h3>`; last = g.cg; }
+        html += itemBlock(`<b>${esc(g.code)}</b> ${esc(g.d)}`, "", g.tp);
+      });
+    } else if (isLang) {
+      const [bk, code] = CUR.langBooks[CF.c][CF.s];
+      html += `<p class="note">${esc(t("cBook"))}: <strong>${esc(bk)}</strong> · ${esc(t("cLangNote", bk))}</p>`;
+      CUR.langSkills.forEach(([tp, hi, en]) => { html += itemBlock(esc(lang === "hi" ? hi : en), "", [tp]); });
+    } else {
+      CUR.books.filter(b => b.cls === CF.c && b.subj === CF.s).forEach(b => {
+        html += `<h3 class="cg-h">${esc(t("cBook"))}: ${esc(b.book)}</h3>`;
+        b.ch.forEach(ch => {
+          const pdf = `https://ncert.nic.in/textbook/pdf/${b.code}${String(ch.n).padStart(2, "0")}.pdf`;
+          html += itemBlock(`<b>${esc(t("cChapter"))} ${ch.n}</b> ${esc(ch.t)}`, "", ch.tp,
+            `<p class="note"><a href="${pdf}" target="_blank" rel="noopener">${esc(t("cPdf"))} ↗</a></p>`);
+        });
+      });
+      if (CF.c >= 3 && CF.c <= 5 && !CUR.cg[CF.s]) html += `<p class="note">${esc(t("cCgOnly"))}</p>`;
+    }
+    $("#chOut").innerHTML = html;
+  }
+  function chSync() { history.replaceState(null, "", `#/chapters?c=${CF.c}&s=${CF.s}&m=${CF.m}`); renderChapters(); }
+  $("#cClass").addEventListener("change", e => { CF.c = +e.target.value; chSync(); });
+  $("#cSubj").addEventListener("change", e => { CF.s = e.target.value; chSync(); });
+  $$("#cMode button").forEach(b => b.addEventListener("click", () => { CF.m = b.dataset.mode; chSync(); }));
 
   // ---------- STATES ----------
   let stateSort = "count";
@@ -393,7 +532,7 @@
       </div>
       <div class="card-foot"><button class="btn sm primary" data-wopen="${p.id}">${esc(t("open"))}</button>
         <a class="btn sm" href="#/prompts?id=${p.id}">${esc(t("makePrompts"))}</a>
-        <button class="btn sm" data-track="${p.id}" aria-pressed="${tracked}">${esc(tracked ? t("inTrack") : t("addTrack"))}</button></div></article>`;
+        <button class="btn sm" data-track="${p.id}" aria-pressed="${tracked}">${esc(tracked ? t("inTrack") : t("addTrack"))}</button>${waBtn(p)}</div></article>`;
   }
   function renderWorld() {
     buildFilterOptions();
@@ -427,6 +566,7 @@
       <div class="d-sec links"><a class="btn sm" href="${esc(p.source)}" target="_blank" rel="noopener">${esc(t("lnkSource"))} ↗</a></div>
       <div class="d-sec links"><a class="btn primary" href="#/prompts?id=${p.id}">${esc(t("makePrompts"))}</a>
         <button class="btn" type="button" data-print="${p.id}">${esc(t("printCard"))}</button>
+        ${waBtn(p, "btn wa")}
         <button class="btn" type="button" data-track="${p.id}" aria-pressed="${tracked}">${esc(tracked ? t("inTrack") : t("addTrack"))}</button></div>`;
     if (!dlg.open) dlg.showModal();
   }
@@ -601,7 +741,9 @@
       <h2>विश्लेषण कैसे किया गया</h2><ul>
         <li>हर आधिकारिक प्रशस्ति-पत्र पढ़कर उसकी मुख्य पद्धति का शीर्षक (हिंदी/अंग्रेज़ी), हिंदी सार, थीम, विषय, कक्षा स्तर, खर्च और 3 "अपनाने के चरण" लिखे गए। ये चरण प्रशस्ति में बताई पद्धति पर आधारित सुझाव हैं, शिक्षक के अपने शब्द नहीं।</li>
         <li>X (ट्विटर) पर मंत्रालय की पोस्ट: 2026 के 5 शिक्षकों की सीधी पोस्ट लिंक है; बाकी के लिए @EduMinOfIndia पर नाम से खोज का लिंक दिया गया है।</li>
-        <li>इमेज प्रॉम्प्ट केवल गतिविधि दिखाते हैं; किसी वास्तविक शिक्षक का चेहरा या पहचान बनाने को नहीं कहते।</li></ul>
+        <li>इमेज प्रॉम्प्ट केवल गतिविधि दिखाते हैं; किसी वास्तविक शिक्षक का चेहरा या पहचान बनाने को नहीं कहते।</li>
+        <li><b>अध्याय व दक्षता (CG):</b> अध्यायों के नाम NCERT की 2026-27 पुस्तकों के विषय-सूची पृष्ठ से (ncert.nic.in) हैं। हर अध्याय और हर पद्धति को विषय-वस्तु (topic) दी गई है और दोनों का मिलान दिखाया गया है; मिलान सुझाव है, अंतिम निर्णय शिक्षक का। कक्षा 3–5 की दक्षताएँ (CG) NCF-SE 2023 के प्रारंभिक चरण से, जैसा KVS ब्लूप्रिंट में है। भाषा विषयों में पद्धतियाँ पाठ के बजाय कौशल के अनुसार हैं।</li>
+        <li><b>इस सप्ताह की पद्धति</b> हर सोमवार अपने-आप बदलती है (शून्य/कम लागत वाली आधिकारिक पद्धतियों में से)।</li></ul>
       <h2>ध्यान रखें</h2><ul>
         <li>पोर्टल पर 2024 का एक प्रोफ़ाइल (H.N. Girish) दो बार है, इसलिए 2024 में 50 के बजाय 49 प्रोफ़ाइल दिखते हैं।</li>
         <li>कुछ वीडियो लिंक पोर्टल पर दो शिक्षकों के लिए एक ही हैं; ऐसे कार्ड पर चेतावनी दी गई है। 2023 के वीडियो प्लेलिस्ट में क्रमांक से खुलते हैं।</li>
@@ -619,7 +761,9 @@
       <h2>How the analysis was done</h2><ul>
         <li>Each official citation was read and summarised into a practice title (Hindi/English), a Hindi summary, themes, subjects, class band, cost and 3 adoption steps. The steps are suggestions based on the practice described, not the teacher's own words.</li>
         <li>Ministry posts on X: direct links for 5 teachers of 2026; for others, a search link for the name on @EduMinOfIndia.</li>
-        <li>Image prompts depict the activity only and never ask to recreate a real teacher's face or identity.</li></ul>
+        <li>Image prompts depict the activity only and never ask to recreate a real teacher's face or identity.</li>
+        <li><b>Chapters & CGs:</b> chapter names come from the contents pages of NCERT's 2026-27 textbooks (ncert.nic.in). Every chapter and every practice carries topic tags and the matches between them are shown; matches are suggestions and the teacher decides. Class 3–5 Curricular Goals are from the NCF-SE 2023 Preparatory stage, as used in KVS blueprints. For languages, practices are listed by skill rather than by lesson.</li>
+        <li><b>Practice of the week</b> changes automatically every Monday (chosen from official zero/low-cost practices).</li></ul>
       <h2>Notes</h2><ul>
         <li>The portal lists one 2024 profile (H.N. Girish) twice, so 49 profiles appear for 2024 instead of 50.</li>
         <li>A few videos are linked to two teachers on the portal; those cards carry a warning. 2023 videos open at the right position in the playlist.</li>

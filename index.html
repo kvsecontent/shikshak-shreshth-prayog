@@ -36,6 +36,7 @@
     <a href="#/overview" data-tab="overview" data-i18n="tabOverview">अवलोकन</a>
     <a href="#/awardees" data-tab="awardees" data-i18n="tabAwardees">भारत के पुरस्कृत शिक्षक</a>
     <a href="#/kvs" data-tab="kvs" data-i18n="tabKvs">केंद्रीय विद्यालय (KVS)</a>
+    <a href="#/chapters" data-tab="chapters" data-i18n="tabChapters">अध्याय व दक्षता (CG)</a>
     <a href="#/states" data-tab="states" data-i18n="tabStates">राज्यवार</a>
     <a href="#/themes" data-tab="themes" data-i18n="tabThemes">विषय-वस्तु (थीम)</a>
     <a href="#/world" data-tab="world" data-i18n="tabWorld">विश्व की पद्धतियाँ</a>
@@ -61,6 +62,7 @@
       </div>
       <div class="kpis" id="kpis"></div>
     </div>
+    <section class="panel weekly" id="weekly" aria-label="Practice of the week"></section>
     <div class="grid2">
       <div class="panel">
         <h2 data-i18n="chYear">वर्षवार पुरस्कृत शिक्षक</h2>
@@ -118,6 +120,23 @@
     </div>
     <div class="kpis kvs-kpis" id="kvsKpis"></div>
     <div class="cards" id="kvsCards"></div>
+  </section>
+
+  <!-- CHAPTERS / CG -->
+  <section data-view="chapters" class="view" hidden>
+    <div class="view-head">
+      <h1 data-i18n="tabChapters">अध्याय व दक्षता (CG)</h1>
+      <p class="muted" data-i18n="chLede">कक्षा और विषय चुनें: NCERT (2026-27) के हर अध्याय के लिए कौन-सी पुरस्कृत पद्धति काम आएगी। कक्षा 3–5 में दक्षता (CG) के अनुसार भी देखें।</p>
+    </div>
+    <form class="filters" onsubmit="return false">
+      <label><span data-i18n="cClass">कक्षा</span><select id="cClass"></select></label>
+      <label><span data-i18n="fSubj">विषय</span><select id="cSubj"></select></label>
+      <div class="seg small cmode" role="group" id="cMode">
+        <button type="button" data-mode="ch" aria-pressed="true" data-i18n="cModeCh">अध्याय के अनुसार</button>
+        <button type="button" data-mode="cg" aria-pressed="false" data-i18n="cModeCg">दक्षता (CG) के अनुसार</button>
+      </div>
+    </form>
+    <div id="chOut"></div>
   </section>
 
   <!-- STATES -->
@@ -232,6 +251,7 @@
 
 <script src="data/awardees.js"></script>
 <script src="data/international.js"></script>
+<script src="data/curriculum.js"></script>
 <script src="assets/js/i18n.js"></script>
 <script src="assets/js/app.js"></script>
 </body>

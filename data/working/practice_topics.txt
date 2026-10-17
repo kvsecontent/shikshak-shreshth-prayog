@@ -1,0 +1,248 @@
+# id: topics (hand-assigned; a topic is given only when the practice directly helps teach it)
+s2025-01: g_maps,c_civics,s_env
+s2025-02: l_reading,l_writing
+s2025-03: m_number,m_shape,s_plants
+s2025-04: s_env,l_reading
+s2025-05: l_phonics,l_reading,m_number,cult
+s2025-06: s_plants,s_food,h_history
+s2025-07: s_tech
+s2025-08: m_number,m_shape
+s2025-09:
+s2025-10: s_tech
+s2025-11: l_reading,s_tech
+s2025-12: m_number,l_phonics,s_plants
+s2025-13:
+s2025-14: m_frac,m_meas,m_number,m_puzzle
+s2025-15: s_force,s_energy,s_tech
+s2025-16:
+s2025-17: s_env,s_plants
+s2025-18: l_reading,l_lit,m_number,c_civics
+s2025-19: s_tech,s_energy
+s2025-20: l_reading,l_lit
+s2025-21: cult,s_plants,l_lit
+s2025-22: s_matter
+s2025-23:
+s2025-24: l_writing,l_speaking,l_lit,s_food
+s2025-25: l_phonics,m_number,l_reading
+s2025-26: e_econ,cult
+s2025-27:
+s2025-28: l_reading,l_speaking,l_lit
+s2025-29: cult
+s2025-30: s_body,s_env
+s2025-31:
+s2025-32: s_tech,s_space
+s2025-33: s_food,s_body,s_space
+s2025-34: m_number,l_lit,cult
+s2025-35: s_body
+s2025-36: l_reading,l_phonics
+s2025-37: s_plants,s_body,m_data
+s2025-38: s_tech
+s2025-39: s_tech
+s2025-40: s_plants,s_water,s_env
+s2025-41: m_shape
+s2025-42: h_history,g_maps
+s2025-43:
+s2025-44:
+s2025-45: s_tech,s_water
+s2024-01: l_speaking
+s2024-02: s_matter
+s2024-03: g_maps,h_history,l_reading
+s2024-04: l_reading
+s2024-05: l_writing,l_vocab,s_env
+s2024-06: s_tech,s_energy
+s2024-07: s_body,l_lit
+s2024-08: l_vocab,s_tech,s_env
+s2024-09: m_data
+s2024-10: s_plants,s_body
+s2024-11: s_plants,l_reading
+s2024-12:
+s2024-13: m_number,m_ops,l_reading
+s2024-14: m_puzzle,s_tech
+s2024-15: l_vocab,l_reading,m_number,h_history,cult
+s2024-16: s_tech,s_plants
+s2024-17: s_plants,s_animals,s_env,s_water
+s2024-18: c_civics
+s2024-19: l_reading,l_lit
+s2024-20: l_reading,m_number,m_shape,m_meas
+s2024-21: s_tech
+s2024-22: cult
+s2024-23: l_reading,l_writing
+s2024-24: s_body
+s2024-25: m_shape,m_area
+s2024-26: s_env
+s2024-27: s_animals,m_data
+s2024-28: s_cells,s_body,l_vocab
+s2024-29: c_civics
+s2024-30: s_env,s_space
+s2024-31:
+s2024-32: l_speaking,c_civics
+s2024-33: s_body
+s2024-34:
+s2024-35: l_vocab,s_env
+s2024-36: l_lit,l_vocab
+s2024-37: l_lit,l_vocab,cult
+s2024-38: s_body,s_plants
+s2024-39: l_writing,l_reading,s_force
+s2024-40: l_lit,s_env
+s2024-41:
+s2024-42: s_body
+s2024-43: s_tech
+s2024-44: m_number,l_reading,s_env
+s2024-45: m_meas,e_econ
+s2024-46: l_writing,s_tech
+s2024-47: s_energy
+s2024-48: l_vocab,l_phonics,l_reading
+s2024-49: cult
+s2023-01: s_force,s_energy
+s2023-02: m_shape,m_data
+s2023-03:
+s2023-04: l_lit,l_reading,l_writing
+s2023-05: s_tech
+s2023-06: s_force,m_shape,m_number,s_space
+s2023-07: l_phonics,m_number
+s2023-08: s_water,s_env
+s2023-09: e_econ
+s2023-10: e_econ,m_meas
+s2023-11: m_number,l_reading
+s2023-12:
+s2023-13: s_space,l_lit
+s2023-14: l_writing
+s2023-15: s_water
+s2023-16: l_lit,l_speaking
+s2023-17: m_number,m_shape,g_maps
+s2023-18:
+s2023-19: l_reading
+s2023-20: s_body,s_space,s_env
+s2023-21: s_tech
+s2023-22: l_writing,cult
+s2023-23: l_reading
+s2023-24: s_body
+s2023-25:
+s2023-26: s_body
+s2023-27: s_matter,s_food
+s2023-28: l_reading
+s2023-29: s_env,s_plants
+s2023-30: l_reading
+s2023-31: s_cells,s_body
+s2023-32: l_speaking,l_lit
+s2023-33: s_cells,s_env
+s2023-34: s_plants,s_tech
+s2023-35:
+s2023-36: s_plants,s_food
+s2023-37: s_tech
+s2023-38: s_env,s_plants
+s2023-39: l_lit
+s2023-40: l_vocab
+s2023-41: e_econ
+s2023-42: l_reading,m_number,m_ops
+s2023-43:
+s2023-44:
+s2023-45: l_reading,l_lit,g_maps
+s2023-46: s_force,s_energy
+s2023-47: e_econ
+s2023-48: s_body
+s2023-49: s_cells,s_space,s_matter
+s2023-50: s_space
+s2022-01:
+s2022-02:
+s2022-03: s_cells,s_matter,s_space
+s2022-04: l_reading,l_writing,s_plants
+s2022-05: l_reading
+s2022-06: s_body
+s2022-07: s_env,s_tech
+s2022-08: s_plants
+s2022-09:
+s2022-10: l_writing
+s2022-11:
+s2022-12: m_sym,m_shape,m_alg,m_frac,m_area
+s2022-13:
+s2022-14: s_space,s_matter,e_econ
+s2022-15: s_matter,s_body
+s2022-16: e_econ
+s2022-17: l_reading,l_lit
+s2022-18:
+s2022-19: l_speaking
+s2022-20: s_env,e_econ
+s2022-21: l_phonics,l_lit,l_vocab
+s2022-22:
+s2022-23:
+s2022-24:
+s2022-25: m_shape
+s2022-26:
+s2022-27: l_lit
+s2022-28: s_plants,s_water,cult
+s2022-29: s_matter,s_energy,s_space
+s2022-30: s_matter,s_energy
+s2022-31: s_tech,s_energy
+s2022-32: s_env,e_econ,c_civics
+s2022-33: cult
+s2022-34: s_water,s_tech
+s2022-35: s_body
+s2022-36: l_lit
+s2022-37:
+s2022-38: m_number,m_shape
+s2022-39: s_tech
+s2022-40: l_reading
+s2022-41:
+s2022-42: e_econ,s_tech
+s2022-43: l_writing
+s2022-44:
+s2022-45: m_number,m_ops
+s2021-01: m_shape,m_puzzle
+s2021-02:
+s2021-03: l_reading
+s2021-04:
+s2021-05: s_tech,s_food
+s2021-06: s_body
+s2021-07: s_plants,s_env
+s2021-08: s_tech,m_puzzle,s_force
+s2021-09: l_reading
+s2021-10: s_plants
+s2021-11: l_lit,cult
+s2021-12:
+s2021-13: s_energy,m_frac,m_sym
+s2021-14: s_env
+s2021-15:
+s2021-16:
+s2021-17: g_maps,h_history
+s2021-18: s_matter,s_force
+s2021-19: s_env,s_water
+s2021-20: m_data,m_shape,m_sym
+s2021-21:
+s2021-22: l_speaking,l_vocab
+s2021-23: l_reading
+s2021-24: s_body
+s2021-25: s_plants,s_food,cult
+s2021-26: m_ops,m_sym
+s2021-27: s_tech,s_energy
+s2021-28: s_food
+s2021-29: l_lit,s_food
+s2021-30:
+s2021-31: m_number,m_ops,m_shape
+s2021-32: l_lit,cult
+s2021-33: m_frac,m_number
+s2021-34: s_plants,s_animals,s_water
+s2021-35: s_water,s_env,g_maps
+s2021-36: m_meas,m_data,m_shape
+s2021-37:
+s2021-38:
+s2021-39: s_matter
+s2021-40: l_reading,l_speaking
+s2021-41: s_energy,s_force
+s2021-42: s_space,s_plants,m_shape
+s2021-43:
+s2021-44: s_tech,s_env
+s2026-08: m_puzzle
+s2026-10: l_reading,s_food
+s2026-13: cult
+s2026-14:
+s2026-19: m_number,l_phonics
+s2026-32: m_number,m_alg,m_shape
+s2026-36: s_space
+s2026-38: s_energy
+s2026-39: s_env
+s2026-41: m_number,l_phonics
+s2026-43: s_tech
+s2026-44: s_env
+s2026-45: l_reading
+s2026-47: s_food,s_body
