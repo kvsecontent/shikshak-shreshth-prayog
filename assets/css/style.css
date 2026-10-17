@@ -133,6 +133,14 @@ main { padding-top: 22px; padding-bottom: 40px; min-height: 60vh; }
 .mini-main small { color: var(--ink-2); font-size: .78rem; }
 .mini-act { display: flex; gap: 6px; flex: none; }
 @media (max-width: 560px) { .mini { flex-direction: column; align-items: stretch; } .cmode { margin: 0; } }
+.pimg { margin: 0; }
+.pimg:not(.ok) { height: 1px; overflow: hidden; opacity: 0; margin: 0 !important; }
+.card .pimg { margin: -14px -14px 2px; }
+.card .pimg img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: var(--radius) var(--radius) 0 0; }
+.d-sec .pimg img, .save-box .pimg img { width: 100%; border-radius: 12px; }
+.pimg figcaption { font-size: .76rem; color: var(--ink-2); margin-top: 4px; }
+.save-box { border-left: 4px solid var(--green); }
+.save-box code { font-size: 1rem; background: var(--surface-2); padding: 3px 8px; border-radius: 6px; }
 .panel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 16px 18px; box-shadow: var(--shadow); }
 .grid2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
 .insight { margin-top: 14px; }

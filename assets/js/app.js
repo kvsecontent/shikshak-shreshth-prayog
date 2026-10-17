@@ -59,6 +59,15 @@
     return `${head}\n\n${hi ? "अपनी कक्षा में कैसे अपनाएँ:" : "How to adopt it in your class:"}\n${steps.map((s, i) => `${i + 1}. ${s}`).join("\n")}\n\n${hi ? "पूरा देखें (वीडियो सहित)" : "See full details (with video)"}: ${link}`;
   }
   const waUrl = x => "https://wa.me/?text=" + encodeURIComponent(waText(x));
+  // Practice images (made by the teacher, e.g. in ChatGPT) live at images/practices/<id>.jpg|png|webp.
+  // No manifest: try each extension and hide the figure if none exists, so uploading a file is enough.
+  const IMG_EXT = ["jpg", "png", "webp"];
+  window.sspNextImg = img => {
+    const i = +img.dataset.ext + 1;
+    if (i < IMG_EXT.length) { img.dataset.ext = i; img.src = `images/practices/${img.dataset.id}.${IMG_EXT[i]}`; } else img.closest("figure").remove();
+  };
+  const pimg = (id, alt, caption) => `<figure class="pimg"><img src="images/practices/${esc(id)}.jpg" data-id="${esc(id)}" data-ext="0" alt="${esc(alt)}" loading="lazy" decoding="async"
+      onload="this.closest('figure').classList.add('ok')" onerror="sspNextImg(this)">${caption ? `<figcaption>${esc(t("imgCaption"))}</figcaption>` : ""}</figure>`;
   const waBtn = (x, cls = "btn sm wa") => `<a class="${cls}" href="${waUrl(x)}" target="_blank" rel="noopener" aria-label="WhatsApp">${WA_ICON}<span>WhatsApp</span></a>`;
   const toast = msg => { const el = $("#toast"); el.textContent = msg; el.classList.add("show"); clearTimeout(toast._t); toast._t = setTimeout(() => el.classList.remove("show"), 1800); };
   const copyText = async txt => {
@@ -264,7 +273,7 @@
   function card(r) {
     const tracked = !!trackerData()[r.id];
     const place = [r.org ? orgL(r.org) : "", stateL(r.state)].filter(Boolean).join(" · ");
-    return `<article class="card">
+    return `<article class="card">${r.t ? pimg(r.id, title(r)) : ""}
       <div class="card-top">${avatar(r, 48)}<div class="card-who"><strong>${esc(r.name)}</strong><small>${esc(r.school)}</small><small>${esc(place)}</small></div></div>
       <div class="chips"><span class="chip year">${r.year}</span>${r.cat === "higher" ? `<span class="chip he">${esc(t("catHE"))}</span>` : ""}
         ${r.cs === "awaited" ? `<span class="chip await">${esc(t("awaited"))}</span>` : ""}${r.cs === "news" ? `<span class="chip await">${esc(t("news"))}</span>` : ""}
@@ -355,6 +364,7 @@
       <div class="chips">${(r.th || []).map(c => `<span class="chip">${esc(themeL(c))}</span>`).join("")}
         ${(r.gr || []).map(g => `<span class="chip">${esc(bandL(g))}</span>`).join("")}${r.cost !== undefined ? `<span class="chip cost${r.cost}">${esc(costL(r.cost))}</span>` : ""}
         ${(r.sub || []).map(s => `<span class="chip">${esc(subjL(s))}</span>`).join("")}</div>
+      ${r.t ? `<div class="d-sec">${pimg(r.id, title(r), true)}</div>` : ""}
       ${r.cs === "awaited" ? `<div class="d-sec"><p class="quote">${esc(t("dAwait"))}</p></div>` : ""}
       ${r.s_hi && lang === "hi" ? `<div class="d-sec"><h3>${esc(t("dSummary"))}</h3><p>${esc(r.s_hi)}</p></div>` : ""}
       ${steps.length ? `<div class="d-sec"><h3>${esc(t("dSteps"))}</h3><ol class="steps">${steps.map(s => `<li>${esc(s)}</li>`).join("")}</ol></div>` : ""}
@@ -521,7 +531,7 @@
   const WF = { q: "", region: "", ev: "", band: "" };
   function wcard(p) {
     const tracked = !!trackerData()[p.id];
-    return `<article class="card">
+    return `<article class="card">${pimg(p.id, lang === "hi" ? p.name_hi : p.name_en)}
       <div class="chips"><span class="chip year">${esc(p.country)}</span><span class="chip ev-${p.evidence}">${esc(evL(p.evidence))}</span></div>
       <h3>${esc(lang === "hi" ? p.name_hi : p.name_en)}</h3>
       <p>${esc(lang === "hi" ? p.what_hi : p.what_en)}</p>
@@ -559,6 +569,7 @@
         <button class="btn sm d-close" type="button" data-close>${esc(t("close"))}</button></div>
       <div class="chips"><span class="chip ev-${p.evidence}">${esc(evL(p.evidence))}</span><span class="chip cost${p.cost}">${esc(costL(p.cost))}</span>
         ${p.grades.map(g => `<span class="chip">${esc(bandL(g))}</span>`).join("")}${p.themes.map(c => `<span class="chip">${esc(themeL(c))}</span>`).join("")}</div>
+      <div class="d-sec">${pimg(p.id, lang === "hi" ? p.name_hi : p.name_en, true)}</div>
       <div class="d-sec"><p>${esc(lang === "hi" ? p.what_hi : p.what_en)}</p></div>
       <div class="d-sec"><h3>${esc(t("evidence"))}</h3><p lang="en">${esc(p.evidence_note)}</p></div>
       <div class="d-sec"><h3>${esc(t("fit"))}: ${esc(t(p.fit === "high" ? "fitHigh" : "fitMedium"))}</h3><p>${esc(p.fit_hi)}</p></div>
@@ -655,10 +666,16 @@
     const P = buildPrompts(it, +$("#pStyle").value || 0, $("#pRatio").value, $("#pText").value);
     const block = (id, h, d, txt) => `<article class="prompt-card"><header><div><h3 style="margin:0">${esc(h)}</h3><small class="muted">${esc(d)}</small></div>
       <button class="btn sm primary" data-copy="${id}">${esc(t("copy"))}</button></header><pre id="${id}">${esc(txt)}</pre></article>`;
+    const fname = `${studioId}.jpg`;
+    const saveBox = `<article class="prompt-card save-box"><header><div><h3 style="margin:0">${esc(t("saveTitle"))}</h3><small class="muted">${esc(t("saveSub"))}</small></div>
+      <button class="btn sm primary" data-copy="fname">${esc(t("copy"))}</button></header>
+      <p style="margin:0 0 6px"><code id="fname">${esc(fname)}</code></p>
+      <ol class="steps note">${t("saveSteps").map(x => `<li>${esc(x)}</li>`).join("")}</ol>
+      ${pimg(studioId, "", false)}</article>`;
     out.innerHTML = `<div class="panel"><h2 style="margin:0">${esc(lang === "hi" ? it.title_hi : it.title_en)}</h2><p class="note" style="margin:4px 0 0">${esc(lang === "hi" ? it.note_hi : it.note)}</p>
       <div class="links" style="margin-top:8px"><a class="btn sm" href="https://chatgpt.com/" target="_blank" rel="noopener">${esc(t("openChatGPT"))} ↗</a>
       <button class="btn sm" type="button" id="studioPrint">${esc(t("printCard"))}</button></div></div>` +
-      block("pr1", t("pScene"), t("pSceneD"), P.scene) + block("pr2", t("pComic"), t("pComicD"), P.comic) + block("pr3", t("pPoster"), t("pPosterD"), P.poster);
+      block("pr1", t("pScene"), t("pSceneD"), P.scene) + saveBox + block("pr2", t("pComic"), t("pComicD"), P.comic) + block("pr3", t("pPoster"), t("pPosterD"), P.poster);
     $("#studioPrint").addEventListener("click", () => printCard(byId[studioId] || wById[studioId]));
   }
   $("#pPick").addEventListener("change", e => {

@@ -60,6 +60,24 @@ python3 -m http.server 8765
 
 ---
 
+## अपनी बनाई इमेज जोड़ना (Adding practice images)
+
+1. साइट पर पद्धति का **इमेज प्रॉम्प्ट** खोलें → "कक्षा दृश्य" प्रॉम्प्ट ChatGPT में डालें।
+2. इमेज डाउनलोड करें और नाम **पद्धति का ID** रखें (प्रॉम्प्ट स्टूडियो के "बनी हुई इमेज यहाँ सहेजें" बॉक्स में लिखा है), जैसे `s2025-24.png`।
+3. फ़ाइल `images/incoming/` में डालें और चलाएँ (PNG को हल्की JPG में बदलता है):
+
+```bash
+bash scripts/add_images.sh
+```
+
+4. push करें; इमेज उस पद्धति के कार्ड और पॉप-अप में अपने-आप दिखेगी:
+
+```bash
+git add images && git commit -m "Add practice images" && git push
+```
+
+GitHub वेबसाइट से भी कर सकते हैं: repo → `images/practices` → **Add file → Upload files** (नाम वही ID, जैसे `s2025-24.jpg`)।
+
 ## फ़ोल्डर संरचना (Structure)
 
 ```
