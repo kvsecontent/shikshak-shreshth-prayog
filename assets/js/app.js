@@ -681,8 +681,7 @@
     const saveBox = `<article class="prompt-card save-box"><header><div><h3 style="margin:0">${esc(t("saveTitle"))}</h3><small class="muted">${esc(t("saveSub"))}</small></div>
       <button class="btn sm primary" data-copy="fname">${esc(t("copy"))}</button></header>
       <p style="margin:0 0 6px"><code id="fname">${esc(fname)}</code></p>
-      <ol class="steps note">${t("saveSteps").map(x => `<li>${esc(x)}</li>`).join("")}</ol>
-      ${pimg(studioId, "", false)}</article>`;
+      <ol class="steps note">${t("saveSteps").map(x => `<li>${esc(x)}</li>`).join("")}</ol></article>`;
     out.innerHTML = `<div class="panel"><h2 style="margin:0">${esc(lang === "hi" ? it.title_hi : it.title_en)}</h2><p class="note" style="margin:4px 0 0">${esc(lang === "hi" ? it.note_hi : it.note)}</p>
       <div class="links" style="margin-top:8px"><a class="btn sm" href="https://chatgpt.com/" target="_blank" rel="noopener">${esc(t("openChatGPT"))} ↗</a>
       <button class="btn sm" type="button" id="studioPrint">${esc(t("printCard"))}</button></div></div>` +
