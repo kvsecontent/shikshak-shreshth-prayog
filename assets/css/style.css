@@ -141,6 +141,14 @@ main { padding-top: 22px; padding-bottom: 40px; min-height: 60vh; }
 .pimg figcaption { font-size: .76rem; color: var(--ink-2); margin-top: 4px; }
 .save-box { border-left: 4px solid var(--green); }
 .save-box code { font-size: 1rem; background: var(--surface-2); padding: 3px 8px; border-radius: 6px; }
+.admin-only { }
+body:not(.is-admin) .admin-only { display: none !important; }
+body.is-admin .public-only { display: none !important; }
+.foot-admin { display: flex; gap: 10px; align-items: center; margin-bottom: 6px; }
+.linkbtn { background: none; border: 0; padding: 0; font: inherit; color: var(--ink-2); text-decoration: underline; cursor: pointer; }
+.admin-badge { background: var(--green-soft); color: var(--green); font-weight: 700; font-size: .76rem; padding: 2px 9px; border-radius: 999px; }
+.admin-form { display: grid; gap: 12px; max-width: 360px; }
+.admin-form input { font: inherit; padding: 8px 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); color: var(--ink); }
 .panel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 16px 18px; box-shadow: var(--shadow); }
 .grid2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
 .insight { margin-top: 14px; }

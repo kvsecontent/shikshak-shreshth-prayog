@@ -4,7 +4,10 @@ window.I18N = {
     skip: "मुख्य सामग्री पर जाएँ",
     appName: "शिक्षक श्रेष्ठ प्रयोग",
     appTag: "राष्ट्रीय शिक्षक पुरस्कार 2021–2026 · विश्व की श्रेष्ठ कक्षा पद्धतियाँ",
-    tabOverview: "अवलोकन", imgCaption: "AI से बना चित्र, गतिविधि समझाने के लिए; असली शिक्षक या विद्यालय नहीं।",
+    tabOverview: "अवलोकन", adminLink: "एडमिन", adminLogout: "लॉग आउट", adminOn: "एडमिन मोड",
+    adminTitle: "एडमिन लॉग इन", adminId: "एडमिन ID", adminPw: "पासवर्ड", adminGo: "लॉग इन करें", adminBad: "ID या पासवर्ड गलत है।",
+    adminOk: "एडमिन मोड चालू", adminOut: "लॉग आउट हो गया", adminNoCrypto: "यह ब्राउज़र सुरक्षित लॉग इन नहीं कर सकता। साइट को https:// या localhost पर खोलें।",
+    adminId2: "पद्धति ID (इमेज का नाम)", imgCaption: "AI से बना चित्र, गतिविधि समझाने के लिए; असली शिक्षक या विद्यालय नहीं।",
     saveTitle: "बनी हुई इमेज यहाँ सहेजें", saveSub: "कक्षा दृश्य वाली इमेज इसी नाम से सहेजें, वह इस पद्धति के कार्ड पर अपने-आप दिखेगी।",
     saveSteps: ["ChatGPT में ऊपर का 'कक्षा दृश्य' प्रॉम्प्ट डालें और इमेज बनवाएँ।", "इमेज डाउनलोड करें और फ़ाइल का नाम ठीक यही रखें (ऊपर कॉपी करें)। .jpg, .png या .webp कोई भी चलेगा।", "फ़ाइल को प्रोजेक्ट के images/practices फ़ोल्डर में रखें, या GitHub पर images/practices में अपलोड करें।", "साइट अपडेट होते ही इमेज कार्ड पर दिखने लगेगी।"], tabChapters: "अध्याय व दक्षता (CG)",
     chLede: "कक्षा और विषय चुनें: NCERT (2026-27) के हर अध्याय के लिए कौन-सी पुरस्कृत पद्धति काम आएगी। कक्षा 3–5 में दक्षता (CG) के अनुसार भी देखें।",
@@ -62,13 +65,16 @@ window.I18N = {
     printCard: "गतिविधि कार्ड प्रिंट करें", makePrompts: "इमेज प्रॉम्प्ट", close: "बंद करें", share: "लिंक कॉपी करें",
     for: "कक्षा", subjects: "विषय", themesL: "थीम",
     pcFoot: "राष्ट्रीय शिक्षक पुरस्कार से प्रेरित · शिक्षक श्रेष्ठ प्रयोग",
-    footNote: "आधिकारिक प्रशस्ति-पत्र शिक्षा मंत्रालय के राष्ट्रीय शिक्षक पुरस्कार पोर्टल से लिए गए हैं। विश्लेषण, अपनाने के चरण और इमेज प्रॉम्प्ट इस प्रोजेक्ट द्वारा तैयार किए गए हैं; किसी भी तथ्य के लिए मूल स्रोत देखें।"
+    footNote: "आधिकारिक प्रशस्ति-पत्र शिक्षा मंत्रालय के राष्ट्रीय शिक्षक पुरस्कार पोर्टल से लिए गए हैं। विश्लेषण और अपनाने के चरण इस प्रोजेक्ट द्वारा तैयार किए गए हैं; किसी भी तथ्य के लिए मूल स्रोत देखें।"
   },
   en: {
     skip: "Skip to content",
     appName: "Shikshak Shreshth Prayog",
     appTag: "National Teachers' Awards 2021–2026 · World's best classroom practices",
-    tabOverview: "Overview", imgCaption: "AI-made illustration of the activity; not the actual teacher or school.",
+    tabOverview: "Overview", adminLink: "Admin", adminLogout: "Log out", adminOn: "Admin mode",
+    adminTitle: "Admin log in", adminId: "Admin ID", adminPw: "Password", adminGo: "Log in", adminBad: "Wrong ID or password.",
+    adminOk: "Admin mode on", adminOut: "Logged out", adminNoCrypto: "This browser cannot log in securely. Open the site over https:// or localhost.",
+    adminId2: "Practice ID (image name)", imgCaption: "AI-made illustration of the activity; not the actual teacher or school.",
     saveTitle: "Save the finished image here", saveSub: "Save the classroom-scene image with this exact name and it will appear on this practice's card automatically.",
     saveSteps: ["Paste the 'Classroom scene' prompt above into ChatGPT and generate the image.", "Download it and rename the file to exactly this name (copy above). .jpg, .png or .webp all work.", "Put the file in the project's images/practices folder, or upload it to images/practices on GitHub.", "Once the site updates, the image shows on the card."], tabChapters: "Chapters & CGs",
     chLede: "Pick a class and subject: see which award-winning practices fit each NCERT (2026-27) chapter. For Classes 3–5 you can also browse by Curricular Goal (CG).",
@@ -126,7 +132,7 @@ window.I18N = {
     printCard: "Print activity card", makePrompts: "Image prompts", close: "Close", share: "Copy link",
     for: "Class", subjects: "Subjects", themesL: "Themes",
     pcFoot: "Inspired by the National Teachers' Award · Shikshak Shreshth Prayog",
-    footNote: "Official citations are from the Ministry of Education's National Teachers' Award portal. Analysis, adoption steps and image prompts were prepared by this project; check the original source for any fact."
+    footNote: "Official citations are from the Ministry of Education's National Teachers' Award portal. Analysis and adoption steps were prepared by this project; check the original source for any fact."
   }
 };
 

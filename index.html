@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&family=Noto+Sans+Devanagari:wght@400;500;600;700&family=Noto+Serif:wght@600;700&family=Noto+Serif+Devanagari:wght@600;700&display=swap" rel="stylesheet">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23b4541a'/%3E%3Cpath d='M14 44V20l18 8 18-8v24l-18 8z' fill='%23fff7ed'/%3E%3Cpath d='M32 28v24' stroke='%23b4541a' stroke-width='3'/%3E%3C/svg%3E">
-<link rel="stylesheet" href="assets/css/style.css?v=202610180141">
+<link rel="stylesheet" href="assets/css/style.css?v=202610180150">
 </head>
 <body>
 <a class="skip" href="#main" data-i18n="skip">Skip to content</a>
@@ -41,7 +41,7 @@
     <a href="#/themes" data-tab="themes" data-i18n="tabThemes">विषय-वस्तु (थीम)</a>
     <a href="#/world" data-tab="world" data-i18n="tabWorld">विश्व की पद्धतियाँ</a>
     <a href="#/prize" data-tab="prize" data-i18n="tabPrize">ग्लोबल टीचर प्राइज़</a>
-    <a href="#/prompts" data-tab="prompts" data-i18n="tabPrompts">इमेज प्रॉम्प्ट स्टूडियो</a>
+    <a href="#/prompts" data-tab="prompts" class="admin-only" data-i18n="tabPrompts">इमेज प्रॉम्प्ट स्टूडियो</a>
     <a href="#/tracker" data-tab="tracker" data-i18n="tabTracker">मेरा अपनाया</a>
     <a href="#/about" data-tab="about" data-i18n="tabAbout">स्रोत व जानकारी</a>
   </nav>
@@ -239,7 +239,10 @@
 </main>
 
 <footer class="foot wrap">
-  <p data-i18n="footNote">आधिकारिक प्रशस्ति-पत्र शिक्षा मंत्रालय के राष्ट्रीय शिक्षक पुरस्कार पोर्टल से लिए गए हैं। विश्लेषण, अपनाने के चरण और इमेज प्रॉम्प्ट इस प्रोजेक्ट द्वारा तैयार किए गए हैं; किसी भी तथ्य के लिए मूल स्रोत देखें।</p>
+  <p class="foot-admin"><span class="admin-only admin-badge" data-i18n="adminOn">एडमिन मोड</span>
+    <button type="button" class="linkbtn public-only" id="adminLogin" data-i18n="adminLink">एडमिन</button>
+    <button type="button" class="linkbtn admin-only" id="adminLogout" data-i18n="adminLogout">लॉग आउट</button></p>
+  <p data-i18n="footNote">आधिकारिक प्रशस्ति-पत्र शिक्षा मंत्रालय के राष्ट्रीय शिक्षक पुरस्कार पोर्टल से लिए गए हैं। विश्लेषण और अपनाने के चरण इस प्रोजेक्ट द्वारा तैयार किए गए हैं; किसी भी तथ्य के लिए मूल स्रोत देखें।</p>
 </footer>
 
 <dialog id="detail" aria-labelledby="dTitle">
@@ -249,10 +252,10 @@
 <div id="toast" role="status" aria-live="polite"></div>
 <div id="printArea" aria-hidden="true"></div>
 
-<script src="data/awardees.js?v=202610180141"></script>
-<script src="data/international.js?v=202610180141"></script>
-<script src="data/curriculum.js?v=202610180141"></script>
-<script src="assets/js/i18n.js?v=202610180141"></script>
-<script src="assets/js/app.js?v=202610180141"></script>
+<script src="data/awardees.js?v=202610180150"></script>
+<script src="data/international.js?v=202610180150"></script>
+<script src="data/curriculum.js?v=202610180150"></script>
+<script src="assets/js/i18n.js?v=202610180150"></script>
+<script src="assets/js/app.js?v=202610180150"></script>
 </body>
 </html>

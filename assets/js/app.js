@@ -98,6 +98,42 @@
     lang = b.dataset.lang; store.set("ssp_lang", lang); applyStatic(); buildFilterOptions(); route(true);
   }));
 
+  // ---------- admin mode ----------
+  // GitHub Pages is static, so this only HIDES admin tools from ordinary visitors; it is not access control.
+  // Only a PBKDF2 hash of "<id>:<password>" is stored here, never the password itself.
+  const ADMIN = { salt: "139da8ff235b9c20677e6663f3f1edeb", iter: 200000, hash: "44297c0c151fae9d6b9a4d916fea8c6fc014da4745743362e2d05c14b8d7a962" };
+  const ADMIN_VIEWS = ["prompts"];
+  const isAdmin = () => store.get("ssp_admin", false) === true;
+  const applyAdmin = () => document.body.classList.toggle("is-admin", isAdmin());
+  async function adminCheck(id, pw) {
+    const enc = new TextEncoder();
+    const key = await crypto.subtle.importKey("raw", enc.encode(`${id}:${pw}`), "PBKDF2", false, ["deriveBits"]);
+    const salt = Uint8Array.from(ADMIN.salt.match(/../g).map(h => parseInt(h, 16)));
+    const bits = await crypto.subtle.deriveBits({ name: "PBKDF2", hash: "SHA-256", salt, iterations: ADMIN.iter }, key, 256);
+    return [...new Uint8Array(bits)].map(b => b.toString(16).padStart(2, "0")).join("") === ADMIN.hash;
+  }
+  function openAdminLogin() {
+    $("#dBody").innerHTML = `<div class="d-head"><h2 id="dTitle">${esc(t("adminTitle"))}</h2><button class="btn sm d-close" type="button" data-close>${esc(t("close"))}</button></div>
+      <form id="adminForm" class="admin-form" autocomplete="on">
+        <label class="block">${esc(t("adminId"))}<input name="username" autocomplete="username" required></label>
+        <label class="block">${esc(t("adminPw"))}<input name="password" type="password" autocomplete="current-password" required></label>
+        <p class="note" id="adminMsg" role="alert"></p>
+        <button class="btn primary" type="submit">${esc(t("adminGo"))}</button></form>`;
+    if (!dlg.open) dlg.showModal();
+    $("#adminForm").addEventListener("submit", async e => {
+      e.preventDefault();
+      const f = e.target; const msg = $("#adminMsg");
+      if (!window.crypto || !crypto.subtle) { msg.textContent = t("adminNoCrypto"); return; }
+      msg.textContent = "…";
+      const ok = await adminCheck(f.username.value.trim(), f.password.value);
+      if (!ok) { msg.textContent = t("adminBad"); f.password.value = ""; return; }
+      store.set("ssp_admin", true); applyAdmin(); dlg.close(); toast(t("adminOk")); route(true);
+    });
+  }
+  $("#adminLogin").addEventListener("click", openAdminLogin);
+  $("#adminLogout").addEventListener("click", () => { store.set("ssp_admin", false); applyAdmin(); toast(t("adminOut")); route(true); });
+  applyAdmin();
+
   // ---------- router ----------
   const VIEWS = ["overview", "awardees", "kvs", "chapters", "states", "themes", "world", "prize", "prompts", "tracker", "about"];
   function parseHash() {
@@ -108,7 +144,8 @@
   }
   let lastView = null;
   function route(force) {
-    const { view, params } = parseHash();
+    let { view, params } = parseHash();
+    if (ADMIN_VIEWS.includes(view) && !isAdmin()) { history.replaceState(null, "", "#/overview"); view = "overview"; params = new URLSearchParams(); }
     $$("[data-view]").forEach(s => { s.hidden = s.dataset.view !== view; });
     $$(".tabs a").forEach(a => { if (a.dataset.tab === view) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current"); });
     const R = { overview: renderOverview, awardees: () => renderAwardees(params), kvs: renderKvs, chapters: () => renderChapters(params), states: renderStates, themes: renderThemes,
@@ -169,7 +206,7 @@
         <ol class="steps">${r.st[DI()].map(s => `<li>${esc(s)}</li>`).join("")}</ol></div>
         <div class="wk-actions"><button class="btn primary" data-open="${r.id}">${esc(t("open"))}</button>${waBtn(r, "btn wa")}
           <button class="btn" type="button" data-wprint="${r.id}">${esc(t("printCard"))}</button>
-          <a class="btn ghost" href="#/prompts?id=${r.id}">${esc(t("makePrompts"))}</a></div></div>
+          <a class="btn ghost admin-only" href="#/prompts?id=${r.id}">${esc(t("makePrompts"))}</a></div></div>
       <p class="note" style="margin:8px 0 0">${esc(t("weekNote"))}</p>`;
   }
   document.addEventListener("click", e => { const b = e.target.closest("[data-wprint]"); if (b) printCard(byId[b.dataset.wprint]); });
@@ -284,7 +321,7 @@
       <div class="chips">${(r.th || []).slice(0, 4).map(c => `<span class="chip">${esc(themeL(c))}</span>`).join("")}</div>
       <div class="card-foot">
         <button class="btn sm primary" data-open="${r.id}">${esc(t("open"))}</button>
-        ${r.t ? `<a class="btn sm" href="#/prompts?id=${r.id}">${esc(t("makePrompts"))}</a>` : ""}
+        ${r.t ? `<a class="btn sm admin-only" href="#/prompts?id=${r.id}">${esc(t("makePrompts"))}</a>` : ""}
         ${r.t ? `<button class="btn sm" data-track="${r.id}" aria-pressed="${tracked}">${esc(tracked ? t("inTrack") : t("addTrack"))}</button>` : ""}
         ${r.t ? waBtn(r) : ""}
         ${hasVideo(r) ? `<span class="vid-dot"><svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><path fill="#c00" d="M23 7s-.2-1.6-.9-2.3c-.9-.9-1.9-.9-2.4-1C16.4 3.5 12 3.5 12 3.5s-4.4 0-7.7.2c-.5.1-1.5.1-2.4 1C1.2 5.4 1 7 1 7S.8 8.9.8 10.8v1.8c0 1.9.2 3.8.2 3.8s.2 1.6.9 2.3c.9.9 2.1.9 2.6 1 1.9.2 7.5.2 7.5.2s4.4 0 7.7-.2c.5-.1 1.5-.1 2.4-1 .7-.7.9-2.3.9-2.3s.2-1.9.2-3.8v-1.8C23.2 8.9 23 7 23 7z"/><path fill="#fff" d="M9.7 15.1V8.5l6 3.3z"/></svg>${esc(t("video"))}</span>` : ""}
@@ -365,6 +402,7 @@
         ${(r.gr || []).map(g => `<span class="chip">${esc(bandL(g))}</span>`).join("")}${r.cost !== undefined ? `<span class="chip cost${r.cost}">${esc(costL(r.cost))}</span>` : ""}
         ${(r.sub || []).map(s => `<span class="chip">${esc(subjL(s))}</span>`).join("")}</div>
       ${r.t ? `<div class="d-sec">${pimg(r.id, title(r), true)}</div>` : ""}
+      <p class="note admin-only">${esc(t("adminId2"))}: <code id="pid">${esc(r.id)}.jpg</code> <button class="btn sm" type="button" data-copy="pid">${esc(t("copy"))}</button></p>
       ${r.cs === "awaited" ? `<div class="d-sec"><p class="quote">${esc(t("dAwait"))}</p></div>` : ""}
       ${r.s_hi && lang === "hi" ? `<div class="d-sec"><h3>${esc(t("dSummary"))}</h3><p>${esc(r.s_hi)}</p></div>` : ""}
       ${steps.length ? `<div class="d-sec"><h3>${esc(t("dSteps"))}</h3><ol class="steps">${steps.map(s => `<li>${esc(s)}</li>`).join("")}</ol></div>` : ""}
@@ -377,7 +415,7 @@
         ${r.x ? `<a class="btn sm" href="${esc(r.x)}" target="_blank" rel="noopener">${esc(t("lnkXdirect"))} ↗</a>` : `<a class="btn sm" href="${xSearch(r)}" target="_blank" rel="noopener">${esc(t("lnkX"))} ↗</a>`}
       </div></div>
       ${r.t ? `<div class="d-sec links">
-        <a class="btn primary" href="#/prompts?id=${r.id}">${esc(t("makePrompts"))}</a>
+        <a class="btn primary admin-only" href="#/prompts?id=${r.id}">${esc(t("makePrompts"))}</a>
         <button class="btn" type="button" data-print="${r.id}">${esc(t("printCard"))}</button>
         <button class="btn" type="button" data-track="${r.id}" aria-pressed="${tracked}">${esc(tracked ? t("inTrack") : t("addTrack"))}</button>
         ${waBtn(r, "btn wa")}
@@ -541,7 +579,7 @@
         <div class="meta">${esc(t("for"))}<b>${esc(p.grades.map(g => g.replace("-", "–")).join(", "))}</b></div>
       </div>
       <div class="card-foot"><button class="btn sm primary" data-wopen="${p.id}">${esc(t("open"))}</button>
-        <a class="btn sm" href="#/prompts?id=${p.id}">${esc(t("makePrompts"))}</a>
+        <a class="btn sm admin-only" href="#/prompts?id=${p.id}">${esc(t("makePrompts"))}</a>
         <button class="btn sm" data-track="${p.id}" aria-pressed="${tracked}">${esc(tracked ? t("inTrack") : t("addTrack"))}</button>${waBtn(p)}</div></article>`;
   }
   function renderWorld() {
@@ -570,12 +608,13 @@
       <div class="chips"><span class="chip ev-${p.evidence}">${esc(evL(p.evidence))}</span><span class="chip cost${p.cost}">${esc(costL(p.cost))}</span>
         ${p.grades.map(g => `<span class="chip">${esc(bandL(g))}</span>`).join("")}${p.themes.map(c => `<span class="chip">${esc(themeL(c))}</span>`).join("")}</div>
       <div class="d-sec">${pimg(p.id, lang === "hi" ? p.name_hi : p.name_en, true)}</div>
+      <p class="note admin-only">${esc(t("adminId2"))}: <code id="pid">${esc(p.id)}.jpg</code> <button class="btn sm" type="button" data-copy="pid">${esc(t("copy"))}</button></p>
       <div class="d-sec"><p>${esc(lang === "hi" ? p.what_hi : p.what_en)}</p></div>
       <div class="d-sec"><h3>${esc(t("evidence"))}</h3><p lang="en">${esc(p.evidence_note)}</p></div>
       <div class="d-sec"><h3>${esc(t("fit"))}: ${esc(t(p.fit === "high" ? "fitHigh" : "fitMedium"))}</h3><p>${esc(p.fit_hi)}</p></div>
       <div class="d-sec"><h3>${esc(t("dSteps"))}</h3><ol class="steps">${steps.map(s => `<li>${esc(s)}</li>`).join("")}</ol></div>
       <div class="d-sec links"><a class="btn sm" href="${esc(p.source)}" target="_blank" rel="noopener">${esc(t("lnkSource"))} ↗</a></div>
-      <div class="d-sec links"><a class="btn primary" href="#/prompts?id=${p.id}">${esc(t("makePrompts"))}</a>
+      <div class="d-sec links"><a class="btn primary admin-only" href="#/prompts?id=${p.id}">${esc(t("makePrompts"))}</a>
         <button class="btn" type="button" data-print="${p.id}">${esc(t("printCard"))}</button>
         ${waBtn(p, "btn wa")}
         <button class="btn" type="button" data-track="${p.id}" aria-pressed="${tracked}">${esc(tracked ? t("inTrack") : t("addTrack"))}</button></div>`;
@@ -768,14 +807,14 @@
       <h2>विश्लेषण कैसे किया गया</h2><ul>
         <li>हर आधिकारिक प्रशस्ति-पत्र पढ़कर उसकी मुख्य पद्धति का शीर्षक (हिंदी/अंग्रेज़ी), हिंदी सार, थीम, विषय, कक्षा स्तर, खर्च और 3 "अपनाने के चरण" लिखे गए। ये चरण प्रशस्ति में बताई पद्धति पर आधारित सुझाव हैं, शिक्षक के अपने शब्द नहीं।</li>
         <li>X (ट्विटर) पर मंत्रालय की पोस्ट: 2026 के 5 शिक्षकों की सीधी पोस्ट लिंक है; बाकी के लिए @EduMinOfIndia पर नाम से खोज का लिंक दिया गया है।</li>
-        <li>इमेज प्रॉम्प्ट केवल गतिविधि दिखाते हैं; किसी वास्तविक शिक्षक का चेहरा या पहचान बनाने को नहीं कहते।</li>
+        <li class="admin-only">इमेज प्रॉम्प्ट केवल गतिविधि दिखाते हैं; किसी वास्तविक शिक्षक का चेहरा या पहचान बनाने को नहीं कहते।</li>
         <li><b>अध्याय व दक्षता (CG):</b> अध्यायों के नाम NCERT की 2026-27 पुस्तकों के विषय-सूची पृष्ठ से (ncert.nic.in) हैं। हर अध्याय और हर पद्धति को विषय-वस्तु (topic) दी गई है और दोनों का मिलान दिखाया गया है; मिलान सुझाव है, अंतिम निर्णय शिक्षक का। कक्षा 3–5 की दक्षताएँ (CG) NCF-SE 2023 के प्रारंभिक चरण से, जैसा KVS ब्लूप्रिंट में है। भाषा विषयों में पद्धतियाँ पाठ के बजाय कौशल के अनुसार हैं।</li>
         <li><b>इस सप्ताह की पद्धति</b> हर सोमवार अपने-आप बदलती है (शून्य/कम लागत वाली आधिकारिक पद्धतियों में से)।</li></ul>
       <h2>ध्यान रखें</h2><ul>
         <li>पोर्टल पर 2024 का एक प्रोफ़ाइल (H.N. Girish) दो बार है, इसलिए 2024 में 50 के बजाय 49 प्रोफ़ाइल दिखते हैं।</li>
         <li>कुछ वीडियो लिंक पोर्टल पर दो शिक्षकों के लिए एक ही हैं; ऐसे कार्ड पर चेतावनी दी गई है। 2023 के वीडियो प्लेलिस्ट में क्रमांक से खुलते हैं।</li>
         <li>कौशल विकास मंत्रालय (MSDE) के ITI प्रशिक्षक पुरस्कार इस संस्करण में शामिल नहीं हैं।</li>
-        <li>नया डेटा जोड़ने का तरीका README.md में है (scripts/ फ़ोल्डर)।</li></ul>`;
+        <li class="admin-only">नया डेटा जोड़ने का तरीका README.md में है (scripts/ फ़ोल्डर)।</li></ul>`;
     const en = `
       <p>This dashboard helps teachers learn from National Teachers' Award winners and adopt their practices in their own classrooms.</p>
       <h2>What the data covers</h2>${tbl}
@@ -788,14 +827,14 @@
       <h2>How the analysis was done</h2><ul>
         <li>Each official citation was read and summarised into a practice title (Hindi/English), a Hindi summary, themes, subjects, class band, cost and 3 adoption steps. The steps are suggestions based on the practice described, not the teacher's own words.</li>
         <li>Ministry posts on X: direct links for 5 teachers of 2026; for others, a search link for the name on @EduMinOfIndia.</li>
-        <li>Image prompts depict the activity only and never ask to recreate a real teacher's face or identity.</li>
+        <li class="admin-only">Image prompts depict the activity only and never ask to recreate a real teacher's face or identity.</li>
         <li><b>Chapters & CGs:</b> chapter names come from the contents pages of NCERT's 2026-27 textbooks (ncert.nic.in). Every chapter and every practice carries topic tags and the matches between them are shown; matches are suggestions and the teacher decides. Class 3–5 Curricular Goals are from the NCF-SE 2023 Preparatory stage, as used in KVS blueprints. For languages, practices are listed by skill rather than by lesson.</li>
         <li><b>Practice of the week</b> changes automatically every Monday (chosen from official zero/low-cost practices).</li></ul>
       <h2>Notes</h2><ul>
         <li>The portal lists one 2024 profile (H.N. Girish) twice, so 49 profiles appear for 2024 instead of 50.</li>
         <li>A few videos are linked to two teachers on the portal; those cards carry a warning. 2023 videos open at the right position in the playlist.</li>
         <li>Ministry of Skill Development (MSDE) ITI trainer awards are not included in this edition.</li>
-        <li>How to refresh the data is explained in README.md (scripts/ folder).</li></ul>`;
+        <li class="admin-only">How to refresh the data is explained in README.md (scripts/ folder).</li></ul>`;
     $("#aboutBody").innerHTML = lang === "hi" ? hi : en;
   }
 
