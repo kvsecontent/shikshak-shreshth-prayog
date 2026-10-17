@@ -73,7 +73,7 @@
   }));
 
   // ---------- router ----------
-  const VIEWS = ["overview", "awardees", "states", "themes", "world", "prize", "prompts", "tracker", "about"];
+  const VIEWS = ["overview", "awardees", "kvs", "states", "themes", "world", "prize", "prompts", "tracker", "about"];
   function parseHash() {
     const h = location.hash.replace(/^#\/?/, "");
     const [v, qs] = h.split("?");
@@ -85,7 +85,7 @@
     const { view, params } = parseHash();
     $$("[data-view]").forEach(s => { s.hidden = s.dataset.view !== view; });
     $$(".tabs a").forEach(a => { if (a.dataset.tab === view) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current"); });
-    const R = { overview: renderOverview, awardees: () => renderAwardees(params), states: renderStates, themes: renderThemes,
+    const R = { overview: renderOverview, awardees: () => renderAwardees(params), kvs: renderKvs, states: renderStates, themes: renderThemes,
       world: renderWorld, prize: renderPrize, prompts: () => renderStudio(params), tracker: renderTracker, about: renderAbout };
     R[view]();
     if (view !== lastView && !force) window.scrollTo(0, 0);
@@ -335,6 +335,17 @@
     const s = e.target.closest("[data-share]"); if (s) copyText(location.href.split("#")[0] + "#/awardees?open=" + s.dataset.share);
     if (e.target.closest("a[href^='#/']")) dlg.close();
   });
+
+  // ---------- KVS ----------
+  function renderKvs() {
+    const list = A.filter(r => r.org === "KVS").sort((a, b) => b.year - a.year);
+    const k = [
+      [list.length, t("kvsTotal")], [new Set(list.map(r => r.year)).size, t("kvsYears")],
+      [new Set(list.map(r => r.state)).size, t("kvsRegions")], [list.filter(r => r.cost === 0).length, t("kvsZero")]
+    ];
+    $("#kvsKpis").innerHTML = k.map(([n, l]) => `<div class="kpi"><b>${n}</b><span>${esc(l)}</span></div>`).join("");
+    $("#kvsCards").innerHTML = list.map(card).join("");
+  }
 
   // ---------- STATES ----------
   let stateSort = "count";
