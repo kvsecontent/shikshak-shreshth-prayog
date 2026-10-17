@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="hi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Shikshak Shreshth Prayog</title>
+<meta name="description" content="National Teachers' Award 2021–2026 practices and international best practices, analysed for adoption in Classes 1–10. Hindi + English.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&family=Noto+Sans+Devanagari:wght@400;500;600;700&family=Noto+Serif:wght@600;700&family=Noto+Serif+Devanagari:wght@600;700&display=swap" rel="stylesheet">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23b4541a'/%3E%3Cpath d='M14 44V20l18 8 18-8v24l-18 8z' fill='%23fff7ed'/%3E%3Cpath d='M32 28v24' stroke='%23b4541a' stroke-width='3'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+<a class="skip" href="#main" data-i18n="skip">Skip to content</a>
+<header class="top">
+  <div class="wrap top-in">
+    <a class="brand" href="#/overview">
+      <span class="brand-mark" aria-hidden="true"></span>
+      <span class="brand-text">
+        <strong data-i18n="appName">शिक्षक श्रेष्ठ प्रयोग</strong>
+        <small data-i18n="appTag">राष्ट्रीय शिक्षक पुरस्कार 2021–2026 · विश्व की श्रेष्ठ कक्षा पद्धतियाँ</small>
+      </span>
+    </a>
+    <div class="top-tools">
+      <div class="seg" role="group" aria-label="Language">
+        <button type="button" data-lang="hi" aria-pressed="true">हिंदी</button>
+        <button type="button" data-lang="en" aria-pressed="false">English</button>
+      </div>
+      <button type="button" class="icon-btn" id="themeBtn" aria-label="Toggle dark mode" title="Theme">
+        <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M12 3a9 9 0 1 0 9 9 7 7 0 0 1-9-9z"/></svg>
+      </button>
+    </div>
+  </div>
+  <nav class="wrap tabs" aria-label="Sections">
+    <a href="#/overview" data-tab="overview" data-i18n="tabOverview">अवलोकन</a>
+    <a href="#/awardees" data-tab="awardees" data-i18n="tabAwardees">भारत के पुरस्कृत शिक्षक</a>
+    <a href="#/states" data-tab="states" data-i18n="tabStates">राज्यवार</a>
+    <a href="#/themes" data-tab="themes" data-i18n="tabThemes">विषय-वस्तु (थीम)</a>
+    <a href="#/world" data-tab="world" data-i18n="tabWorld">विश्व की पद्धतियाँ</a>
+    <a href="#/prize" data-tab="prize" data-i18n="tabPrize">ग्लोबल टीचर प्राइज़</a>
+    <a href="#/prompts" data-tab="prompts" data-i18n="tabPrompts">इमेज प्रॉम्प्ट स्टूडियो</a>
+    <a href="#/tracker" data-tab="tracker" data-i18n="tabTracker">मेरा अपनाया</a>
+    <a href="#/about" data-tab="about" data-i18n="tabAbout">स्रोत व जानकारी</a>
+  </nav>
+</header>
+
+<main id="main" class="wrap">
+
+  <!-- OVERVIEW -->
+  <section data-view="overview" class="view">
+    <div class="hero">
+      <div>
+        <h1 data-i18n="heroTitle">पुरस्कार पाने वाले शिक्षकों से सीखें, अपनी कक्षा में अपनाएँ</h1>
+        <p class="lede" data-i18n="heroLede">शिक्षा मंत्रालय के राष्ट्रीय शिक्षक पुरस्कार (2021–2026) के हर शिक्षक का आधिकारिक प्रशस्ति-पत्र, वीडियो और उनकी पद्धति को कक्षा 1–10 में अपनाने के आसान चरण, साथ में दुनिया की प्रमाण-आधारित पद्धतियाँ।</p>
+        <div class="hero-cta">
+          <a class="btn primary" href="#/awardees" data-i18n="ctaBrowse">शिक्षक देखें</a>
+          <a class="btn" href="#/world" data-i18n="ctaWorld">विश्व की पद्धतियाँ</a>
+        </div>
+      </div>
+      <div class="kpis" id="kpis"></div>
+    </div>
+    <div class="grid2">
+      <div class="panel">
+        <h2 data-i18n="chYear">वर्षवार पुरस्कृत शिक्षक</h2>
+        <div id="chYear" class="chart"></div>
+      </div>
+      <div class="panel">
+        <h2 data-i18n="chBand">किस कक्षा स्तर की पद्धतियाँ</h2>
+        <div id="chBand" class="chart"></div>
+      </div>
+      <div class="panel">
+        <h2 data-i18n="chThemes">सबसे अधिक अपनाई गई थीम</h2>
+        <p class="hint" data-i18n="chThemesHint">किसी थीम पर क्लिक करें, उसके शिक्षक दिखेंगे।</p>
+        <div id="chThemes" class="chart"></div>
+      </div>
+      <div class="panel">
+        <h2 data-i18n="chCost">कितना खर्च लगेगा</h2>
+        <div id="chCost" class="chart"></div>
+        <h2 class="mt" data-i18n="chStates">सबसे अधिक पुरस्कार वाले राज्य</h2>
+        <div id="chStates" class="chart"></div>
+      </div>
+    </div>
+    <div class="panel insight" id="insights"></div>
+  </section>
+
+  <!-- AWARDEES -->
+  <section data-view="awardees" class="view" hidden>
+    <div class="view-head">
+      <h1 data-i18n="tabAwardees">भारत के पुरस्कृत शिक्षक</h1>
+      <p class="muted" id="resultCount"></p>
+    </div>
+    <form class="filters" id="filters" onsubmit="return false">
+      <label class="f-search">
+        <span class="sr" data-i18n="search">खोजें</span>
+        <input type="search" id="q" data-i18n-ph="searchPh" placeholder="नाम, विद्यालय, पद्धति या शब्द खोजें (जैसे 'FLN', 'कठपुतली')">
+      </label>
+      <label><span data-i18n="fYear">वर्ष</span><select id="fYear"></select></label>
+      <label><span data-i18n="fCat">श्रेणी</span><select id="fCat"></select></label>
+      <label><span data-i18n="fState">राज्य/संगठन</span><select id="fState"></select></label>
+      <label><span data-i18n="fTheme">थीम</span><select id="fTheme"></select></label>
+      <label><span data-i18n="fBand">कक्षा स्तर</span><select id="fBand"></select></label>
+      <label><span data-i18n="fSubj">विषय</span><select id="fSubj"></select></label>
+      <label><span data-i18n="fCost">खर्च</span><select id="fCost"></select></label>
+      <label class="f-check"><input type="checkbox" id="fVideo"> <span data-i18n="fVideo">केवल वीडियो वाले</span></label>
+      <button type="button" class="btn ghost" id="fReset" data-i18n="reset">फ़िल्टर हटाएँ</button>
+    </form>
+    <div class="cards" id="cards"></div>
+    <div class="more"><button class="btn" id="moreBtn" data-i18n="more">और दिखाएँ</button></div>
+  </section>
+
+  <!-- STATES -->
+  <section data-view="states" class="view" hidden>
+    <div class="view-head">
+      <h1 data-i18n="tabStates">राज्यवार</h1>
+      <p class="muted" data-i18n="statesLede">हर राज्य/केंद्र शासित प्रदेश से कितने शिक्षक पुरस्कृत हुए और उनकी मुख्य थीम। किसी राज्य पर क्लिक कर उसके सभी शिक्षक देखें।</p>
+    </div>
+    <div class="seg small" role="group" id="stateSort">
+      <button type="button" data-sort="count" aria-pressed="true" data-i18n="sortCount">संख्या के अनुसार</button>
+      <button type="button" data-sort="az" aria-pressed="false" data-i18n="sortAz">नाम के अनुसार</button>
+    </div>
+    <div class="state-grid" id="stateGrid"></div>
+  </section>
+
+  <!-- THEMES -->
+  <section data-view="themes" class="view" hidden>
+    <div class="view-head">
+      <h1 data-i18n="tabThemes">विषय-वस्तु (थीम)</h1>
+      <p class="muted" data-i18n="themesLede">हर पद्धति को 19 थीम में बाँटा गया है। एक शिक्षक की पद्धति कई थीम में हो सकती है।</p>
+    </div>
+    <div class="theme-grid" id="themeGrid"></div>
+  </section>
+
+  <!-- WORLD -->
+  <section data-view="world" class="view" hidden>
+    <div class="view-head">
+      <h1 data-i18n="tabWorld">विश्व की पद्धतियाँ</h1>
+      <p class="muted" data-i18n="worldLede">कक्षा 1–10 के लिए दुनिया भर की प्रमाण-आधारित पद्धतियाँ: शोध कितना मज़बूत है, खर्च कितना है, और भारतीय कक्षा (40+ बच्चे, कम संसाधन, बहुभाषी) में कितनी उपयुक्त है।</p>
+    </div>
+    <form class="filters" onsubmit="return false">
+      <label class="f-search"><span class="sr" data-i18n="search">खोजें</span><input type="search" id="wq" data-i18n-ph="searchPh2" placeholder="देश या पद्धति खोजें"></label>
+      <label><span data-i18n="fRegion">क्षेत्र</span><select id="wRegion"></select></label>
+      <label><span data-i18n="fEvidence">शोध प्रमाण</span><select id="wEv"></select></label>
+      <label><span data-i18n="fBand">कक्षा स्तर</span><select id="wBand"></select></label>
+    </form>
+    <div class="legend" id="evLegend"></div>
+    <div class="cards" id="worldCards"></div>
+  </section>
+
+  <!-- GLOBAL TEACHER PRIZE -->
+  <section data-view="prize" class="view" hidden>
+    <div class="view-head">
+      <h1 data-i18n="tabPrize">ग्लोबल टीचर प्राइज़</h1>
+      <p class="muted" data-i18n="prizeLede">वार्की फ़ाउंडेशन (यूनेस्को के साथ) का 10 लाख डॉलर का ग्लोबल टीचर प्राइज़: हर विजेता की मुख्य पद्धति और भारतीय कक्षा में उससे क्या सीखें।</p>
+    </div>
+    <ol class="timeline" id="prizeList"></ol>
+  </section>
+
+  <!-- PROMPT STUDIO -->
+  <section data-view="prompts" class="view" hidden>
+    <div class="view-head">
+      <h1 data-i18n="tabPrompts">इमेज प्रॉम्प्ट स्टूडियो</h1>
+      <p class="muted" data-i18n="promptsLede">कोई भी पद्धति चुनें, शैली चुनें और ChatGPT (या किसी इमेज टूल) के लिए तैयार प्रॉम्प्ट कॉपी करें। प्रॉम्प्ट केवल गतिविधि को दिखाते हैं, किसी वास्तविक शिक्षक का चेहरा नहीं।</p>
+    </div>
+    <div class="studio">
+      <form class="panel studio-form" onsubmit="return false">
+        <label class="block"><span data-i18n="pPick">पद्धति चुनें</span>
+          <input list="practiceList" id="pPick" data-i18n-ph="pPickPh" placeholder="नाम या पद्धति लिखें…">
+          <datalist id="practiceList"></datalist>
+        </label>
+        <label class="block"><span data-i18n="pStyle">शैली</span>
+          <select id="pStyle"></select></label>
+        <label class="block"><span data-i18n="pRatio">आकार</span>
+          <select id="pRatio">
+            <option value="landscape 16:9">16:9 (PPT / स्क्रीन)</option>
+            <option value="portrait A4 (3:4)">A4 पोस्टर (3:4)</option>
+            <option value="square 1:1">1:1 (WhatsApp / Instagram)</option>
+          </select></label>
+        <label class="block"><span data-i18n="pText">चित्र में लिखे शब्द</span>
+          <select id="pText">
+            <option value="hi">हिंदी</option>
+            <option value="en">English</option>
+            <option value="none">कोई शब्द नहीं</option>
+          </select></label>
+        <p class="hint" data-i18n="pTip">सुझाव: हिंदी अक्षर कभी-कभी गलत बनते हैं। ऐसा हो तो 'कोई शब्द नहीं' चुनें और शीर्षक बाद में Canva/PPT में लिखें।</p>
+      </form>
+      <div id="promptOut" class="prompt-out"></div>
+    </div>
+  </section>
+
+  <!-- TRACKER -->
+  <section data-view="tracker" class="view" hidden>
+    <div class="view-head">
+      <h1 data-i18n="tabTracker">मेरा अपनाया</h1>
+      <p class="muted" data-i18n="trackerLede">जो पद्धतियाँ आप अपनी कक्षा में आज़माना चाहते हैं या आज़मा चुके हैं, उन्हें यहाँ रखें और नोट लिखें। यह सूची केवल इसी ब्राउज़र में सहेजी जाती है।</p>
+    </div>
+    <div class="tracker-tools">
+      <button class="btn" id="exportCsv" data-i18n="exportCsv">CSV डाउनलोड करें</button>
+      <button class="btn ghost" id="clearTracker" data-i18n="clearTracker">सूची साफ़ करें</button>
+    </div>
+    <div id="trackerList"></div>
+  </section>
+
+  <!-- ABOUT -->
+  <section data-view="about" class="view" hidden>
+    <div class="view-head"><h1 data-i18n="tabAbout">स्रोत व जानकारी</h1></div>
+    <div class="prose" id="aboutBody"></div>
+  </section>
+</main>
+
+<footer class="foot wrap">
+  <p data-i18n="footNote">आधिकारिक प्रशस्ति-पत्र शिक्षा मंत्रालय के राष्ट्रीय शिक्षक पुरस्कार पोर्टल से लिए गए हैं। विश्लेषण, अपनाने के चरण और इमेज प्रॉम्प्ट इस प्रोजेक्ट द्वारा तैयार किए गए हैं; किसी भी तथ्य के लिए मूल स्रोत देखें।</p>
+</footer>
+
+<dialog id="detail" aria-labelledby="dTitle">
+  <div class="d-in" id="dBody"></div>
+</dialog>
+
+<div id="toast" role="status" aria-live="polite"></div>
+<div id="printArea" aria-hidden="true"></div>
+
+<script src="data/awardees.js"></script>
+<script src="data/international.js"></script>
+<script src="assets/js/i18n.js"></script>
+<script src="assets/js/app.js"></script>
+</body>
+</html>
