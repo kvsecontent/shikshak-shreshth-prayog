@@ -9,10 +9,11 @@ n=0
 # Also pick up files dropped straight into images/practices that are not yet "<id>.jpg"
 # (e.g. "s2022-11.png" or "s2022-11.jpg.png").
 for f in "$OUT"/*.{png,jpeg,webp,heic} "$OUT"/*.*.jpg "$OUT"/*\ ; do [ -e "$f" ] && mv "$f" "$IN/$(basename "$f" | tr -d ' ')"; done
-# ".jpg" files that are really PNG (ChatGPT downloads) or are still very large get re-encoded too
+# ".jpg" files that are really PNG (ChatGPT downloads) or wider than 1280px get re-encoded too.
+# (Not by file size: busy images stay large after conversion and would lose quality on every run.)
 for f in "$OUT"/*.jpg; do
   [ -e "$f" ] || continue
-  if file -b "$f" | grep -q PNG || [ "$(wc -c < "$f")" -gt 700000 ]; then mv "$f" "$IN/$(basename "${f%.jpg}").png"; fi
+  if file -b "$f" | grep -q PNG || [ "$(sips -g pixelWidth "$f" 2>/dev/null | awk '/pixelWidth/{print $2}')" -gt 1280 ]; then mv "$f" "$IN/$(basename "${f%.jpg}").png"; fi
 done
 for f in "$IN"/*.{png,jpg,jpeg,webp,heic}; do
   id="$(basename "$f")"; id="${id%%.*}"   # strip every extension: s2022-11.jpg.png -> s2022-11
