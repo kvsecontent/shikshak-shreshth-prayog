@@ -8,7 +8,12 @@ shopt -s nullglob nocaseglob
 n=0
 # Also pick up files dropped straight into images/practices that are not yet "<id>.jpg"
 # (e.g. "s2022-11.png" or "s2022-11.jpg.png").
-for f in "$OUT"/*.{png,jpeg,webp,heic} "$OUT"/*.*.jpg; do [ -e "$f" ] && mv "$f" "$IN/"; done
+for f in "$OUT"/*.{png,jpeg,webp,heic} "$OUT"/*.*.jpg "$OUT"/*\ ; do [ -e "$f" ] && mv "$f" "$IN/$(basename "$f" | tr -d ' ')"; done
+# ".jpg" files that are really PNG (ChatGPT downloads) or are still very large get re-encoded too
+for f in "$OUT"/*.jpg; do
+  [ -e "$f" ] || continue
+  if file -b "$f" | grep -q PNG || [ "$(wc -c < "$f")" -gt 700000 ]; then mv "$f" "$IN/$(basename "${f%.jpg}").png"; fi
+done
 for f in "$IN"/*.{png,jpg,jpeg,webp,heic}; do
   id="$(basename "$f")"; id="${id%%.*}"   # strip every extension: s2022-11.jpg.png -> s2022-11
   if ! grep -q "\"id\":\"$id\"" "$ROOT/data/awardees.js" && ! grep -q "\"id\":\"$id\"" "$ROOT/data/international.js"; then
